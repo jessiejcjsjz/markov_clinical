@@ -96,4 +96,4 @@ mf2_featured2 <- mf2_featured[,fs2_out,drop=F]
 test <- MASS::lda(VTE_t1~.,data=mf2_featured2)
 table(predict(test)$class,mf2_featured2$VTE_t1)
 
-
+#
