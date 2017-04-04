@@ -62,9 +62,24 @@ load('testfile_yi.rda')
 
 data0$VTE_t0 <- ifelse(is.na(as.numeric(data0$VTE_t0)),0,1)
 data0$VTE_t1 <- ifelse(is.na(as.numeric(data1$VTE)),0,1)
-mf <- apply(data0,2,function(x){ifelse(is.na(as.numeric(x)),0,as.numeric(x))})
-data_cumsum <- ddply(data0,.(CI_ID_t0),h415=cumsum(DIAG_CD_415),h451=cumsum(DIAG_CD_451),h453=cumsum(DIAG_CD_453),hvte=cumsum(VTE))
+mf <- apply(data0,2,function(x){ifelse(is.na(as.numeric(x)),0,as.numeric(x))})#convert all the cell into numerical
 
+#rm(list=ls())
+#library(data.table)
+#library(plyr)
+#setwd("/zfsauton/project/highmark/data/longoutput")
+#load('mf_vte.rda')
 
-test <- MASS::lda(VTE_t1~VTE_t0+h415+h451+h453+hvte)
-table(predict(test)$class,vte1)
+mf2 <- as.data.frame(mf)[,as.numeric(which(apply(mf,2,var)>0))] #kick out all the variable with no variation
+
+feature_selection <- apply(mf2,2,function(x){t.test(x~mf2$VTE_t1)$p.value}) #Test the correlation between all the t0 variable with vte_t1
+mf2_featured <- mf2[,feature_selection<=(0.05/length(feature_selection),drop=F]
+
+feature_selection2 <- 
+	sapply((1:10,function(i){
+		print(i)
+		set.seed(i); train <- sample(1:nrow(mf2),nrow(mf2)*0.5)
+		train_data <- mf2_featured[train,]
+		apply(train_data,2,function(x){t.test(x~train_data$VTE_t1)$p.value})
+	})
+
