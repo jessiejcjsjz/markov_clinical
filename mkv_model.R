@@ -78,11 +78,13 @@ feature_selection <- apply(mf2,2,function(x){
 	try(t.test(x~mf2$VTE_t1))
 }) #Test the correlation between all the t0 variable with vte_t1
 
-fs_out <- sapply(feature_selection[-length(feature_selection)],function(x) x$p.value)
+fs_out <- c(sapply(feature_selection[-length(feature_selection)],function(x) x$p.value),0)
 mf2_featured <- mf2[,fs_out<=(0.05/length(feature_selection)),drop=F]
+#test <- MASS::lda(VTE_t1~.,data=mf2_featured)
+#table(predict(test)$class,mf2_featured$VTE_t1)
 
 feature_selection2 <- 
-	sapply((1:10,function(i){
+	sapply(1:100,function(i){
 		print(i)
 		set.seed(i); train <- sample(1:nrow(mf2),nrow(mf2)*0.5)
 		train_data <- mf2_featured[train,]
