@@ -88,8 +88,12 @@ feature_selection2 <-
 		print(i)
 		set.seed(i); train <- sample(1:nrow(mf2),nrow(mf2)*0.5)
 		train_data <- mf2_featured[train,]
-		apply(train_data,2,function(x){t.test(x~train_data$VTE_t1)$p.value})
+		apply(train_data[,-ncol(train_data)],2,function(x){t.test(x~train_data$VTE_t1)$p.value})
 	})
 
-	
-	
+fs2_out <- c(rowMeans(feature_selection2 <= (0.05/nrow(feature_selection2)))>=0.8,T)
+mf2_featured2 <- mf2_featured[,fs2_out,drop=F]
+test <- MASS::lda(VTE_t1~.,data=mf2_featured2)
+table(predict(test)$class,mf2_featured2$VTE_t1)
+
+
