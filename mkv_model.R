@@ -78,8 +78,8 @@ feature_selection <- apply(mf2,2,function(x){
 	try(t.test(x~mf2$VTE_t1))
 }) #Test the correlation between all the t0 variable with vte_t1
 
-fs_out <- sapply(feature_selection,function(x) x$p.value)
-mf2_featured <- mf2[,fs_out<=(0.05/length(feature_selection),drop=F]
+fs_out <- sapply(feature_selection[-length(feature_selection)],function(x) x$p.value)
+mf2_featured <- mf2[,fs_out<=(0.05/length(feature_selection)),drop=F]
 
 feature_selection2 <- 
 	sapply((1:10,function(i){
