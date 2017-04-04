@@ -72,8 +72,14 @@ mf <- apply(data0,2,function(x){ifelse(is.na(as.numeric(x)),0,as.numeric(x))})#c
 
 mf2 <- as.data.frame(mf)[,as.numeric(which(apply(mf,2,var)>0))] #kick out all the variable with no variation
 
-feature_selection <- apply(mf2,2,function(x){t.test(x~mf2$VTE_t1)$p.value}) #Test the correlation between all the t0 variable with vte_t1
-mf2_featured <- mf2[,feature_selection<=(0.05/length(feature_selection),drop=F]
+i <- 0
+feature_selection <- apply(mf2,2,function(x){
+	print(i<<-i+1)
+	try(t.test(x~mf2$VTE_t1))
+}) #Test the correlation between all the t0 variable with vte_t1
+
+fs_out <- sapply(feature_selection,function(x) x$p.value)
+mf2_featured <- mf2[,fs_out<=(0.05/length(feature_selection),drop=F]
 
 feature_selection2 <- 
 	sapply((1:10,function(i){
@@ -82,4 +88,3 @@ feature_selection2 <-
 		train_data <- mf2_featured[train,]
 		apply(train_data,2,function(x){t.test(x~train_data$VTE_t1)$p.value})
 	})
-
