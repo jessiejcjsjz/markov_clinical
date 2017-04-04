@@ -90,3 +90,5 @@ feature_selection2 <-
 		train_data <- mf2_featured[train,]
 		apply(train_data,2,function(x){t.test(x~train_data$VTE_t1)$p.value})
 	})
+
+	
